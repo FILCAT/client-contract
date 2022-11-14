@@ -29,6 +29,31 @@ import "../src/CBORParse.sol";
 
 contract ParseCBORTest is Test {
 
+    function bytes_equal(bytes memory a, bytes memory b) pure public returns(bool) {
+        return keccak256(a) == keccak256(b);
+    }
+
+    function test_specific_cbor_parsing() external {
+        // generated from a builtin actors test, valid cbor, some fields simplified
+        bytes memory dealProposal = hex"8bd82a5828000181e2039220206b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b190800f4420068420066656c6162656c0a1a0008ca0a42000a42000a42000a";
+        bytes memory messageAuthParams = hex"8240584c8bd82a5828000181e2039220206b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b190800f4420068420066656c6162656c0a1a0008ca0a42000a42000a42000a";
+
+        bytes memory parsedOutDealProposal = this.parseAuthenticateMessageParams(messageAuthParams);
+        assert(bytes_equal(dealProposal, parsedOutDealProposal));
+        (bytes memory rawcid, bytes memory provider, uint size) = this.parseDealProposal(parsedOutDealProposal);
+        assert(bytes_equal(rawcid, hex"000181E2039220206B86B273FF34FCE19D6B804EFF5A3F5747ADA4EAA22F1D49C01E52DDB7875B4B"));
+        assert(bytes_equal(provider, hex"0066"));
+        assert(size == 2048);
+    }
+
+    function parseAuthenticateMessageParams(bytes calldata bs) external returns(bytes memory) {
+        return specific_authenticate_message_params_parse(bs);
+    }
+
+    function parseDealProposal(bytes calldata bs) external returns(bytes calldata rawcid, bytes calldata provider, uint size){
+        return specific_deal_proposal_cbor_parse(bs);
+    }
+
     function testCBORHeadersInts() external {
         // setup test cases
         // subset taken from https://www.rfc-editor.org/rfc/rfc8949.html appendix A
@@ -83,6 +108,10 @@ contract ParseCBORTest is Test {
         assert(extra == 999);
         assert(byteIdx == 3);
 
+        bytes memory testesttest = hex"5828000181E2039220206B86B273FF34FCE19D6B804EFF5A3F5747ADA4EAA22F1D49C01E52DDB7875B4B";
+        (maj, extra, byteIdx) = this.parseCBORHeader(testesttest, 0);
+
+
     }
 
     function testCBORHeadersStrings() public {
@@ -121,7 +150,6 @@ contract ParseCBORTest is Test {
     }
 
     function testCBORHeadersOthers() public {
-
         // other
         bytes memory infinity = hex"f97c00"; // (Maj7, 31744, 3)
         bytes memory boolfalse = hex"f4"; // (Maj7, 20, 1)
@@ -131,7 +159,6 @@ contract ParseCBORTest is Test {
         bytes memory emptymap = hex"a0"; 
         bytes memory bigmap = hex"a56161614161626142616361436164614461656145"; //{"a": "A", "b": "B", "c": "C", "d": "D", "e": "E"}
         bytes memory bigarray = hex"981A000102030405060708090a0b0c0d0e0f101112131415161718181819"; // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
-
 
         uint8 maj;
         uint64 extra;

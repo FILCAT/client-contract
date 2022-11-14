@@ -55,15 +55,16 @@ function specific_deal_proposal_cbor_parse(bytes calldata cbor_deal_proposal) pu
     assert(cbor_deal_proposal[byteIdx] == hex"D8");
     byteIdx += 1;
     assert(cbor_deal_proposal[byteIdx] == hex"2A");
-
+    byteIdx += 1;
     // Read header of cid, expect bytestring, strip header, record index to slice rawcid
     uint8 maj;
     uint len;
     (maj, len, byteIdx) = parse_cbor_header(cbor_deal_proposal, byteIdx);
+
     assert(maj == MajByteString);
     rawcid = cbor_deal_proposal[byteIdx:byteIdx+len];
     byteIdx += len;
-    
+
     // Read header of data size, expect positive integer, strip header, parse and record as size
     (maj, size, byteIdx) = parse_cbor_header(cbor_deal_proposal, byteIdx);
     assert(maj == MajUnsignedInt);
@@ -74,11 +75,14 @@ function specific_deal_proposal_cbor_parse(bytes calldata cbor_deal_proposal) pu
 
     // Read header of client, skip
     (maj, len, byteIdx) = parse_cbor_header(cbor_deal_proposal, byteIdx);
+
     assert(maj == MajByteString);
+
     byteIdx += len;
 
     // Read header of provider, expect bytes, strip header, record as provider 
     (maj, len, byteIdx) = parse_cbor_header(cbor_deal_proposal, byteIdx);
+
     assert(maj == MajByteString);
     provider = cbor_deal_proposal[byteIdx:byteIdx+len];
 }
@@ -158,4 +162,3 @@ function parse_cbor_header(bytes memory cbor, uint byteIndex) pure returns (uint
     byteIndex += 8;
     return(maj, extra64, byteIndex);
 }
-
