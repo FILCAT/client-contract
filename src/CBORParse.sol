@@ -16,7 +16,14 @@ pragma solidity ^0.8.13;
 
 
 uint8 constant MajUnsignedInt = 0;
+uint8 constant MajNegativeInt = 1;
 uint8 constant MajByteString = 2;
+uint8 constant MajTextString = 3;
+uint8 constant MajArray = 4;
+uint8 constant MajMap = 5;
+uint8 constant MajTag = 6;
+uint8 constant MajOther = 7;
+
 
 function specific_authenticate_message_params_parse(bytes calldata cbor_params ) pure returns (bytes calldata slice) {
     uint byteIdx = 0;
@@ -77,37 +84,38 @@ function specific_deal_proposal_cbor_parse(bytes calldata cbor_deal_proposal) pu
 }
 
 function slice_uint8(bytes memory bs, uint start) pure returns (uint8) {
-    require(bs.length >= start + 8, "slicing out of range");
+
+    require(bs.length >= start + 1, "slicing out of range");
     uint8 x;
     assembly {
-        x := mload(add(bs, add(0x08, start)))
+        x := mload(add(bs, add(0x01, start)))
     }
     return x;
 }
 
 function slice_uint16(bytes memory bs, uint start) pure returns (uint16) {
-    require(bs.length >= start + 16, "slicing out of range");
+    require(bs.length >= start + 2, "slicing out of range");
     uint16 x;
     assembly {
-        x := mload(add(bs, add(0x10, start)))
+        x := mload(add(bs, add(0x02, start)))
     }
     return x;
 }
 
 function slice_uint32(bytes memory bs, uint start) pure returns (uint32) {
-    require(bs.length >= start + 32, "slicing out of range");
+    require(bs.length >= start + 4, "slicing out of range");
     uint32 x;
     assembly {
-        x := mload(add(bs, add(0x20, start)))
+        x := mload(add(bs, add(0x04, start)))
     }
     return x;
 }
 
 function slice_uint64(bytes memory bs, uint start) pure returns (uint64) {
-    require(bs.length >= start + 64, "slicing out of range");
+    require(bs.length >= start + 8, "slicing out of range");
     uint64 x;
     assembly {
-        x := mload(add(bs, add(0x40, start)))
+        x := mload(add(bs, add(0x08, start)))
     }
     return x;
 }
