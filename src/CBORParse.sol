@@ -18,7 +18,7 @@ pragma solidity ^0.8.13;
 uint8 constant MajUnsignedInt = 0;
 uint8 constant MajByteString = 2;
 
-function specific_authenticate_message_params_parse(bytes calldata cbor_params ) pure returns (bytes memory slice) {
+function specific_authenticate_message_params_parse(bytes calldata cbor_params ) pure returns (bytes calldata slice) {
     uint byteIdx = 0;
     // Expect a struct with two fields
     assert(cbor_params[0] == hex"82"); 
@@ -38,7 +38,7 @@ function specific_authenticate_message_params_parse(bytes calldata cbor_params )
 
 }
 
-function specific_deal_proposal_cbor_parse(bytes calldata cbor_deal_proposal) pure returns (bytes memory rawcid, bytes memory provider, uint size){
+function specific_deal_proposal_cbor_parse(bytes calldata cbor_deal_proposal) pure returns (bytes calldata rawcid, bytes calldata provider, uint size){
     // Shortcut: expect a struct with 11 fields and for the first field to start with a cid tag
     // 11 field struct
     uint byteIdx = 0;
