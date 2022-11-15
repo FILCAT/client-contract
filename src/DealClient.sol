@@ -4,11 +4,9 @@ pragma solidity ^0.8.13;
 import {StdStorage} from "../lib/forge-std/src/Components.sol";
 import {specific_authenticate_message_params_parse, specific_deal_proposal_cbor_parse} from "./CBORParse.sol";
 
-
-
 contract DealClient {
 
-    uint constant AUTHORIZE_MESSAGE_METHOD_NUM = 2643134072; 
+    uint constant public AUTHORIZE_MESSAGE_METHOD_NUM = 2643134072; 
 
     mapping(bytes => bool) public cidSet;
     mapping(bytes => uint) public cidSizes;
@@ -17,11 +15,11 @@ contract DealClient {
     bytes public fallback_calldata;
     address public owner;
 
-    constructor(bytes32 name_) {
+    constructor() {
         owner = msg.sender;
     }
 
-    function addData(bytes calldata cidraw, uint size) public {
+    function addCID(bytes calldata cidraw, uint size) public {
        require(msg.sender == owner);
        cidSet[cidraw] = true;
        cidSizes[cidraw] = size;
@@ -34,9 +32,9 @@ contract DealClient {
 
     function authorizeData(bytes calldata cidraw, bytes calldata provider, uint size) public {
         // if (msg.sender != f05) return;
-        if (!cidSet[cidraw]) return;
-        if (cidSizes[cidraw] != size) return;
-        if (!policyOK(cidraw, provider)) return;
+        require(cidSet[cidraw], "cid must be added before authorizing");
+        require(cidSizes[cidraw] == size, "data size must match expected");
+        require(policyOK(cidraw, provider), "deal failed policy check: has provider already claimed this cid?");
 
         cidProviders[cidraw][provider] = true;
     }
@@ -66,8 +64,6 @@ contract DealClient {
         // XXX parse out raw filecoin byte params from calldata
         handle_filecoin_method(0, method, input);
     }
-
-
 }
 
 
@@ -99,7 +95,7 @@ contract DealClient {
     Other work items
         Do DealProtocolHack -- most difficult
         
-        List out extensions so far
+        List out extension ideas so far
 
         ## Small
         a policy that only authorizes bounded payments
