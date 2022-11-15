@@ -64,13 +64,6 @@ contract DealClientTest is Test {
         // authorization should be added 
         require(client.cidProviders(testCID, testProvider), "test provider should be added");
     }
-
-
-    // function testSetNumber(uint256 x) public {
-    //     counter.setNumber(x);
-    //     assertEq(counter.number(), x);
-    // }
-
 }
 
 

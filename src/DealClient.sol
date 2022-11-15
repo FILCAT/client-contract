@@ -4,6 +4,13 @@ pragma solidity ^0.8.13;
 import {StdStorage} from "../lib/forge-std/src/Components.sol";
 import {specific_authenticate_message_params_parse, specific_deal_proposal_cbor_parse} from "./CBORParse.sol";
 
+contract DealRelay {
+    function relay_deal(bytes memory raw_auth_params, address callee) public {
+        // calls standard filecoin receiver on message authentication api method number
+        callee.call(bytes4(keccak256("handle_filecoin_method(uint64,uint64,bytes)")), 0, 2643134072, raw_auth_params);
+    }
+}
+
 contract DealClient {
 
     uint constant public AUTHORIZE_MESSAGE_METHOD_NUM = 2643134072; 
@@ -100,7 +107,7 @@ contract DealClient {
         ## Small
         a policy that only authorizes bounded payments
         include http location / ipfs hash for fetching raw data
-        miner replication factor 
+        data replication factor / provider replication factor 
         
         ## Medium
         Miner power used as a proxy for reputation
@@ -112,6 +119,22 @@ contract DealClient {
         Miner reputation oracles used for policy
 
         ## Unsolved / Research
-        Proof of merkle translation to post ipfs hashes to the contract 
+        Proof of merkle tree translation to post ipfs hashes to the contract 
+
+block
+        [  msgcid ] 
+
+deal
+        [ commp ] 
+
+        msg|msg|msg... |msg -> commP // data preparation 
+
+contract 
+    here I have commP this satisfies msgcid1 and msgcid2, and I have this proof π 
+    contract runs verify(commP, msgcid, π) 
+    ok you can make this deal
+
+
+
 
 */
