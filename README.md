@@ -52,6 +52,9 @@ Contract clients can work with an offchain party synchronizing with the chain an
 
 ## Some Extension Ideas
 
+If you are looking for ideas the following is a non-exhaustive list of things you could try to build on top of the basic client contract in this repo.  If you build any of these you are welcome to [contribute them back to the repo](https://github.com/lotus-web3/client-contract/blob/main/CONTRIBUTING.md).
+
+
 ### Easy
 1. Add to the client contract a policy that only authorizes particular payment amounts.  This requires reading the storage_price_per_epoch field of the deal proposal, and maybe the deal duration.  It will require changing CBOR parsing logic.
 2. Include a hint about how to get the data so that the provider can read contract state and then fetch from this location directly.  This could be an ipfs hash, http address, physical mailing address to send a letter etc.  This is probably just an additional mapping from raw cid to data locator in the client's state
