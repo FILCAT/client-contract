@@ -31,14 +31,10 @@ contract DealClientTest is Test {
 
         relay.publish_deal(messageAuthParams, a);
         require(client.cidProviders(testCID, testProvider), "test provider should be added");
-    }
 
-    function parseAuthenticateMessageParams(bytes calldata bs) external returns(bytes memory) {
-        return specific_authenticate_message_params_parse(bs);
-    }
-
-    function parseDealProposal(bytes calldata bs) external returns(bytes calldata rawcid, bytes calldata provider, uint size){
-        return specific_deal_proposal_cbor_parse(bs);
+        // publishing again goes against client policy
+        vm.expectRevert(bytes("client contract failed to authorize deal publish"));
+        relay.publish_deal(messageAuthParams, a);
     }
 
     function testAddCIDs() public {
