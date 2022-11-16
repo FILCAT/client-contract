@@ -34,8 +34,8 @@ If you build an extension to this MVP contract this repo hopes to be a good home
 With [FIP 44](https://github.com/filecoin-project/FIPs/blob/master/FIPS/fip-0044.md) landing in nv17 the builtin storage market actor can delegate authorization of a deal proposal to an arbitrary fvm contract.  This allows any filecoin contract to act as a client of the storage market.  This hook is enough to get a long way towards supporting data DAOs and other programmable storage projects.  While we expect more powerful builtin actors APIs to exist in the near future which will further expand the set of supported functionalities, the builtin market interface has the advantage of existing today.
 
 The client contract consists of three conceptual building blocks
-1. A way to add cids to its authorized set.  MVP relies on [contract creator setting directly](https://github.com/lotus-web3/client-contract/blob/main/src/DealClient.sol#L30))
-2. An authorization policy. MVP enforces [one provider per cid](https://github.com/lotus-web3/client-contract/blob/main/src/DealClient.sol#L36))
+1. A way to add cids to its authorized set.  MVP relies on [contract creator setting directly](https://github.com/lotus-web3/client-contract/blob/main/src/DealClient.sol#L30)
+2. An authorization policy. MVP enforces [one provider per cid](https://github.com/lotus-web3/client-contract/blob/main/src/DealClient.sol#L36)
 3. A mechanism of rewarding storage of cids on its wishlist. MVP doesn't have a place for this in its code and relies on the filecoin builtin market for payments.
 
 ### Example variants in terms of building blocks
