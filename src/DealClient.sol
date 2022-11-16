@@ -4,16 +4,17 @@ pragma solidity ^0.8.13;
 import {StdStorage} from "../lib/forge-std/src/Components.sol";
 import {specific_authenticate_message_params_parse, specific_deal_proposal_cbor_parse} from "./CBORParse.sol";
 
-contract DealRelay {
-    function relay_deal(bytes memory raw_auth_params, address callee) public {
+contract MockMarket {
+    function publish_deal(bytes memory raw_auth_params, address callee) public {
         // calls standard filecoin receiver on message authentication api method number
-        callee.call(bytes4(keccak256("handle_filecoin_method(uint64,uint64,bytes)")), 0, 2643134072, raw_auth_params);
+        (bool success, bytes memory _ret) = callee.call(abi.encodeWithSignature("handle_filecoin_method(uint64,uint64,bytes)", 0, 2643134072, raw_auth_params));
+        require(success, "deal publish failed");
     }
 }
 
 contract DealClient {
 
-    uint constant public AUTHORIZE_MESSAGE_METHOD_NUM = 2643134072; 
+    uint64 constant public AUTHORIZE_MESSAGE_METHOD_NUM = 2643134072; 
 
     mapping(bytes => bool) public cidSet;
     mapping(bytes => uint) public cidSizes;
@@ -53,7 +54,7 @@ contract DealClient {
         }
     }
 
-    function handle_filecoin_method(uint codec, uint method, bytes calldata params) public {
+    function handle_filecoin_method(uint64 codec, uint64 method, bytes calldata params) public {
         // dispatch methods
         if (method == AUTHORIZE_MESSAGE_METHOD_NUM) {
             bytes calldata deal_proposal_cbor_bytes = specific_authenticate_message_params_parse(params);
@@ -69,7 +70,7 @@ contract DealClient {
         fallback_calldata = input;
 
         // XXX parse out raw filecoin byte params from calldata
-        handle_filecoin_method(0, method, input);
+        handle_filecoin_method(0, uint64(method), input);
     }
 }
 

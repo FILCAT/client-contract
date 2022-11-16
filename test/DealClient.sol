@@ -9,6 +9,7 @@ import "../src/DealClient.sol";
 
 contract DealClientTest is Test {
     DealClient public client;
+    MockMarket public relay;
     bytes testCID;
     bytes testShortCID;
     bytes testProvider;
@@ -16,10 +17,28 @@ contract DealClientTest is Test {
 
     function setUp() public {
         client = new DealClient();
+        relay = new MockMarket();
         testCID = hex"000181E2039220206B86B273FF34FCE19D6B804EFF5A3F5747ADA4EAA22F1D49C01E52DDB7875B4B";
         testShortCID = hex"42";
         testProvider = hex"0066";
         testOtherProvider = hex"00EE";
+    }
+
+    function testMockMarket() public {
+        client.addCID(testCID, 2048);
+        bytes memory messageAuthParams = hex"8240584c8bd82a5828000181e2039220206b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b190800f4420068420066656c6162656c0a1a0008ca0a42000a42000a42000a";
+        address a = address(client);
+
+        relay.publish_deal(messageAuthParams, a);
+        require(client.cidProviders(testCID, testProvider), "test provider should be added");
+    }
+
+    function parseAuthenticateMessageParams(bytes calldata bs) external returns(bytes memory) {
+        return specific_authenticate_message_params_parse(bs);
+    }
+
+    function parseDealProposal(bytes calldata bs) external returns(bytes calldata rawcid, bytes calldata provider, uint size){
+        return specific_deal_proposal_cbor_parse(bs);
     }
 
     function testAddCIDs() public {
