@@ -72,7 +72,7 @@ If you are looking for ideas the following is a non-exhaustive list of things yo
 
 1. "Client Data Insurance" -- integrate the deal client with a data insurance mechanism that pays out in the case a provider terminates their data
 2. "Market Market" -- make the client a proper market matching bids and asks directly on chain.  Note that this is a pathological use of the builtin storage market, at this point we should definitely be using a different interface and dropping the builtin storage market altogether.
-3. "Data Swap" make a trading market where one provider agrees to store cid A if another provider agrees to store cid B.  This could be a useful primitive to handle cases when providers have mismatchd value and access of their data.
+3. "Data Swap" make a trading market where one provider agrees to store cid A if another provider agrees to store cid B.  This could be a useful primitive to handle cases when providers have mismatchd value and access of their data.  You could also extend this into a research project by including verifiable function computation as another commodity to trade on the market.
 
 
 ### Needs Research
