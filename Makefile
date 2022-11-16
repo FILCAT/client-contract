@@ -1,16 +1,16 @@
 check-deps:
-	@cargo -V
-	@forge -V
+	@cargo -V > /dev/null
+	@forge -V > /dev/null
 
-build:
+build: check-deps
 	forge build
 .PHONY: build
 
-test:
+test: check-deps
 	forge test
 .PHONY: test
 
-clean:
+clean: check-deps
 	forge clean
 .PHONY: clean
 
