@@ -33,7 +33,8 @@ If you build an extension to this MVP contract this repo hopes to be a good home
 
 With [FIP 44](https://github.com/filecoin-project/FIPs/blob/master/FIPS/fip-0044.md) landing in nv17 the builtin storage market actor can delegate authorization of a deal proposal to an arbitrary fvm contract.  This allows any filecoin contract to act as a client of the storage market.  This hook is enough to get a long way towards supporting data DAOs and other programmable storage projects.  While we expect more powerful builtin actors APIs to exist in the near future which will further expand the set of supported functionalities, the builtin market interface has the advantage of existing today.
 
-<img width="656" alt="Publish Storage Deal" src="https://user-images.githubusercontent.com/5515260/202312253-eba9081e-2282-41f9-ab51-358eeb7349a7.png">
+![PublishStorageDeals](https://user-images.githubusercontent.com/5515260/202312700-d47d90a0-245d-4a90-afc4-f2a3a0c3960e.png)
+
 
 ### Client Contract modular breakdown
 
