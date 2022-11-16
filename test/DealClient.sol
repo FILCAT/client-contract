@@ -89,7 +89,7 @@ contract ParseCBORTest is Test {
         return keccak256(a) == keccak256(b);
     }
 
-    function test_specific_cbor_parsing() external {
+    function test_specific_cbor_parsing() view external {
         // generated from a builtin actors test, valid cbor, some fields simplified
         bytes memory dealProposal = hex"8bd82a5828000181e2039220206b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b190800f4420068420066656c6162656c0a1a0008ca0a42000a42000a42000a";
         bytes memory messageAuthParams = hex"8240584c8bd82a5828000181e2039220206b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b190800f4420068420066656c6162656c0a1a0008ca0a42000a42000a42000a";
@@ -102,15 +102,15 @@ contract ParseCBORTest is Test {
         assert(size == 2048);
     }
 
-    function parseAuthenticateMessageParams(bytes calldata bs) external returns(bytes memory) {
+    function parseAuthenticateMessageParams(bytes calldata bs) external pure returns(bytes memory) {
         return specific_authenticate_message_params_parse(bs);
     }
 
-    function parseDealProposal(bytes calldata bs) external returns(bytes calldata rawcid, bytes calldata provider, uint size){
+    function parseDealProposal(bytes calldata bs) external pure returns(bytes calldata rawcid, bytes calldata provider, uint size){
         return specific_deal_proposal_cbor_parse(bs);
     }
 
-    function testCBORHeadersInts() external {
+    function testCBORHeadersInts() view external {
         // setup test cases
         // subset taken from https://www.rfc-editor.org/rfc/rfc8949.html appendix A
         // positive
@@ -170,7 +170,7 @@ contract ParseCBORTest is Test {
 
     }
 
-    function testCBORHeadersStrings() public {
+    function testCBORHeadersStrings() view public {
         // text string
         bytes memory emptystring = hex"60"; 
         bytes memory charactera = hex"6161";
@@ -205,7 +205,7 @@ contract ParseCBORTest is Test {
 
     }
 
-    function testCBORHeadersOthers() public {
+    function testCBORHeadersOthers() public view {
         // other
         bytes memory infinity = hex"f97c00"; // (Maj7, 31744, 3)
         bytes memory boolfalse = hex"f4"; // (Maj7, 20, 1)
@@ -257,11 +257,11 @@ contract ParseCBORTest is Test {
 
     }
 
-    function parseCBORHeader(bytes calldata bs, uint start) external returns(uint8, uint64, uint) {
+    function parseCBORHeader(bytes calldata bs, uint start) external pure returns(uint8, uint64, uint) {
         return parse_cbor_header(bs, start);
     }
 
-    function testSliceBytesEntry() external {
+    function testSliceBytesEntry() external view {
         // setup
         bytes memory bs;
         bs = new bytes(10);
@@ -298,16 +298,16 @@ contract ParseCBORTest is Test {
     }
 
 
-    function sliceUint8Bytes(bytes calldata bs, uint start) external returns(uint8) {
+    function sliceUint8Bytes(bytes calldata bs, uint start) external pure returns(uint8) {
         return slice_uint8(bs, start);
     }
-    function sliceUint16Bytes(bytes calldata bs, uint start) external returns(uint16) {
+    function sliceUint16Bytes(bytes calldata bs, uint start) external pure returns(uint16) {
         return slice_uint16(bs, start);
     }
-    function sliceUint32Bytes(bytes calldata bs, uint start) external returns(uint32) {
+    function sliceUint32Bytes(bytes calldata bs, uint start) external pure returns(uint32) {
         return slice_uint32(bs, start);
     }
-    function sliceUint64Bytes(bytes calldata bs, uint start) external returns(uint64) {
+    function sliceUint64Bytes(bytes calldata bs, uint start) external pure returns(uint64) {
         return slice_uint64(bs, start);
     }
     
