@@ -58,15 +58,23 @@ Contract clients can work with an offchain party synchronizing with the chain an
 3. Add a data replication factor so that the client will only authorize a bounded number of deals for each cid
 
 ### Medium
-1. "Perpetual Storage" -- Start with a contract with a bounded replication factor.  Parse the deal duration from the proposal and track the earliest the deal will expire in client state.  At this date allow the contract to clean up state and track a reduction in replication factor allowing a new deal to track this cid.
+1. "Simple Perpetual Storage" -- Start with a contract with a bounded replication factor.  Parse the deal duration from the proposal and track the earliest the deal will expire in client state.  At this date allow the contract to clean up state and track a reduction in replication factor allowing a new deal to track this cid.
 2. "Quality controlled providers" -- Determine the provider's power by querying the builtin power actor and only accept deals from proviers with a high enough power. This is a very simple sybil resistence measure since the storage provider needs to stake pledge and store files before it can claim deals.
 3. "Freeze feature" -- the cid list is added to and authorization is turned off.  When the list of authorized cids is frozen then the contract can be funded as a whole by a funding party and authorizations turned on.  This has some interesting data auditing applications -- the whole set of data tracked by a contract could be audited before providing funding (either in FIL or a FIL+ style data cap token)
-
+4. "CID Charity" -- see "Trustless third party data funding" above.  The end state is a client which uses donated funds to incentivize storage of data.
+3. "Integrate with builtin market APIs" -- there are many ideas some easier some harder.  By polling the builtin market state you can make the deal client aware of deal state changes beyond the original authorization hook.  For example you can see if a deal has been terminated early and correclty track replication factor without waiting for original expiration time, and you could determine if the deal has actually been activated by a sector and perform some event in response, such as giving the miner an additional payment or minting a specialized DAO token to that miner.
 
 
 ### Hard
 
+1. "Client Data Insurance" -- integrate the deal client with a data insurance mechanism that pays out in the case a provider terminates their data
+2. "Market Market" -- make the client a proper market matching bids and asks directly on chain.  Note that this is a pathological use of the builtin storage market, at this point we should definitely be using a different interface and dropping the builtin storage market altogether.
+3. "Data Swap" make a trading market where one provider agrees to store cid A if another provider agrees to store cid B.  This could be a useful primitive to handle cases when providers have mismatchd value and access of their data.
+
+
 ### Needs Research
+
+Pin IPFS hash directly -- there is a nuance with the filecoin deal cids in relation to the cids of their underlying data. Deal cids are the merkle root of a particular serialization and specially padded chunk of data.  So if you want to add an arbitrary IPFS dag the raw cid will in general be different than the cid tracked by filecoin.  An active area of research is developing a protocol / cryptographic proving techniques for estabilishing some provable link between these two cids so that a client can prove with some confidence that a proposal deal cid matches with the client's desired deal cid.  
 
 
 ## Coming up
