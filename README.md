@@ -26,7 +26,22 @@ TODO: Link to a video demo
 
 ### Build
 
-If you build an extension to this MVP contract this repo hopes to be a good home for it.  Follow the contribution guidelines to add your extended contracts back here where they can be shared with other developers.
+If you build an extension to this MVP contract this repo hopes to be a good home for it.  Follow the [contribution guidelines](https://github.com/lotus-web3/client-contract/blob/main/CONTRIBUTING.md) to add your extended contracts back here where they can be shared with other developers.
+
+
+## Core Idea
+
+With [FIP 44] landing in nv17 the builting storage market actor can delegate authorization of a deal proposal to an arbitrary fvm contract.  This allows any filecoin contract to act as a client of the storage market.  This hook is enough to get a long way, though not quite all the way, towards making general programmable storage markets and data DAOs.  While we expect more powerful builtin actors APIs to exist in the near future this interface has the advantage of existing today.
+
+The client contract consists of three conceptual building blocks
+1. A way to add cids to its authorized set.  MVP relies on [contract creator setting directly](https://github.com/lotus-web3/client-contract/blob/main/src/DealClient.sol#L30))
+2. An authorization policy. MVP enforces [one provider per cid](https://github.com/lotus-web3/client-contract/blob/main/src/DealClient.sol#L36))
+3. A mechanism of rewarding storage of cids on its wishlist. MVP doesn't have a place for this in its code and relies on the filecoin builtin market for payments.
+
+### Example variants in terms of building blocks
+* A simple data DAO can be implemented with a client that adds cids through a voting mechanism
+* Perpetual storage contracts can by implemented with clients that funds deals with defi mechanisms and recycle cids from expiring deals into their authorization sets
+* Trustless third party data funding can be implemented with 1) public ability to authorize cids for the client 2) a funding mechanism that associates payments with particular cids and 3) an authorization policy that only allows deals that are fully funded to pass authorization
 
 
 ## Extensions
