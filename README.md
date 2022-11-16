@@ -33,10 +33,6 @@ If you build an extension to this MVP contract this repo hopes to be a good home
 
 With [FIP 44](https://github.com/filecoin-project/FIPs/blob/master/FIPS/fip-0044.md) landing in nv17 the builtin storage market actor can delegate authorization of a deal proposal to an arbitrary fvm contract.  This allows any filecoin contract to act as a client of the storage market.  This hook is enough to get a long way towards supporting data DAOs and other programmable storage projects.  While we expect more powerful builtin actors APIs to exist in the near future which will further expand the set of supported functionalities, the builtin market interface has the advantage of existing today.
 
-### How it works with Storage Providers and actual transfer of data
-
-Contract clients can work with an offchain party synchronizing with the chain and pushing deal data to miners or alternatively with a pull based model where the client or an offchain delegate provides an incentive and a location to pull from and the storage provider initiates everyting.  This is similar to current deal making protocols but there are key differences (deal proposals can't be cryptographically signed by a contract) so none of this software is quite written yet.  The lotus team is actively prototyping modifications to data transfer and deal making software to allow for miner initiated deals with client contracts.
-
 ### Client Contract modular breakdown
 
 The client contract consists of three conceptual building blocks
@@ -49,6 +45,10 @@ The client contract consists of three conceptual building blocks
 * Perpetual storage contracts can by implemented with clients that funds deals with defi mechanisms and recycle cids from expiring deals into their authorization sets
 * Trustless third party data funding can be implemented with 1) public ability to authorize cids for the client 2) a funding mechanism that associates payments with particular cids and 3) an authorization policy that only allows deals that are fully funded to pass authorization
 
+
+### How it works with Storage Providers and actual transfer of data
+
+Contract clients can work with an offchain party synchronizing with the chain and pushing deal data to miners. Alternatively contract clients could work with a pull based model where the contract provides an incentive and a location to pull from and the storage provider initiates everyting.  Deals wity contract cliehts are similar to current deal making protocols.  However there are key differences. In particular deal proposals can't be cryptographically signed by a contract. So none of the exact software needed for SPs to complete contract client deals is written yet.  The lotus team is actively prototyping modifications to data transfer and deal making software to allow for miner initiated deals with client contracts.
 
 ## Extensions
 
