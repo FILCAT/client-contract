@@ -1,4 +1,4 @@
-## Client Contracts
+# Client Contracts
 ![Screen Shot 2022-11-16 at 11 10 33 AM](https://user-images.githubusercontent.com/5515260/202233423-691bca60-06b7-41d1-a808-e182119778ec.png)![Screen Shot 2022-11-16 at 11 22 28 AM](https://user-images.githubusercontent.com/5515260/202236079-cbb4d257-5abf-458f-b18f-775ceca29170.png)
 ![Screen Shot 2022-11-16 at 11 18 57 AM](https://user-images.githubusercontent.com/5515260/202235551-09c82221-0e5f-4e3c-aa36-fd2fbe170f20.png)
 
@@ -50,7 +50,23 @@ The client contract consists of three conceptual building blocks
 
 Contract clients can work with an offchain party synchronizing with the chain and pushing deal data to miners. Alternatively contract clients could work with a pull based model where the contract provides an incentive and a location to pull from and the storage provider initiates everyting.  Deals wity contract cliehts are similar to current deal making protocols.  However there are key differences. In particular deal proposals can't be cryptographically signed by a contract. So none of the exact software needed for SPs to complete contract client deals is written yet.  The lotus team is actively prototyping modifications to data transfer and deal making software to allow for miner initiated deals with client contracts.
 
-## Extensions
+## Some Extension Ideas
+
+### Easy
+1. Add to the client contract a policy that only authorizes particular payment amounts.  This requires reading the storage_price_per_epoch field of the deal proposal, and maybe the deal duration.  It will require changing CBOR parsing logic.
+2. Include a hint about how to get the data so that the provider can read contract state and then fetch from this location directly.  This could be an ipfs hash, http address, physical mailing address to send a letter etc.  This is probably just an additional mapping from raw cid to data locator in the client's state
+3. Add a data replication factor so that the client will only authorize a bounded number of deals for each cid
+
+### Medium
+1. "Perpetual Storage" -- Start with a contract with a bounded replication factor.  Parse the deal duration from the proposal and track the earliest the deal will expire in client state.  At this date allow the contract to clean up state and track a reduction in replication factor allowing a new deal to track this cid.
+2. "Quality controlled providers" -- Determine the provider's power by querying the builtin power actor and only accept deals from proviers with a high enough power. This is a very simple sybil resistence measure since the storage provider needs to stake pledge and store files before it can claim deals.
+3. "Freeze feature" -- the cid list is added to and authorization is turned off.  When the list of authorized cids is frozen then the contract can be funded as a whole by a funding party and authorizations turned on.  This has some interesting data auditing applications -- the whole set of data tracked by a contract could be audited before providing funding (either in FIL or a FIL+ style data cap token)
+
+
+
+### Hard
+
+### Needs Research
 
 
 ## Coming up
