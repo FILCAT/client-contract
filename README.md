@@ -33,6 +33,8 @@ If you build an extension to this MVP contract this repo hopes to be a good home
 
 With [FIP 44](https://github.com/filecoin-project/FIPs/blob/master/FIPS/fip-0044.md) landing in nv17 the builtin storage market actor can delegate authorization of a deal proposal to an arbitrary fvm contract.  This allows any filecoin contract to act as a client of the storage market.  This hook is enough to get a long way towards supporting data DAOs and other programmable storage projects.  While we expect more powerful builtin actors APIs to exist in the near future which will further expand the set of supported functionalities, the builtin market interface has the advantage of existing today.
 
+<img width="656" alt="Publish Storage Deal" src="https://user-images.githubusercontent.com/5515260/202312253-eba9081e-2282-41f9-ab51-358eeb7349a7.png">
+
 ### Client Contract modular breakdown
 
 The client contract consists of three conceptual building blocks
@@ -47,8 +49,7 @@ The client contract consists of three conceptual building blocks
 
 
 ### How it works with Storage Providers and actual transfer of data
-![Publish Storage Deal](https://user-images.githubusercontent.com/5515260/202311733-b363a84f-7467-4e0e-9395-fc30e66b28a0.png)
-![Data Commitment](https://user-images.githubusercontent.com/5515260/202311757-a6ab1192-06f0-41e4-839c-5b7593783ab4.png)
+<img width="659" alt="Data Commitment" src="https://user-images.githubusercontent.com/5515260/202312295-6f1f0cdd-9b18-4c0d-b2ec-8cf60f6deebe.png">
 
 Contract clients can work with an offchain party synchronizing with the chain and pushing deal data to miners. Alternatively contract clients could work with a pull based model where the contract provides an incentive and a location to pull from and the storage provider initiates everyting.  Deals wity contract cliehts are similar to current deal making protocols.  However there are key differences. In particular deal proposals can't be cryptographically signed by a contract. So none of the exact software needed for SPs to complete contract client deals is written yet.  The lotus team is actively prototyping modifications to data transfer and deal making software to allow for miner initiated deals with client contracts.
 
