@@ -33,6 +33,12 @@ If you build an extension to this MVP contract this repo hopes to be a good home
 
 With [FIP 44](https://github.com/filecoin-project/FIPs/blob/master/FIPS/fip-0044.md) landing in nv17 the builtin storage market actor can delegate authorization of a deal proposal to an arbitrary fvm contract.  This allows any filecoin contract to act as a client of the storage market.  This hook is enough to get a long way towards supporting data DAOs and other programmable storage projects.  While we expect more powerful builtin actors APIs to exist in the near future which will further expand the set of supported functionalities, the builtin market interface has the advantage of existing today.
 
+### How it works with Storage Providers and actual transfer of data
+
+Contract clients can work with an offchain party synchronizing with the chain and pushing deal data to miners or alternatively with a pull based model where the client or an offchain delegate provides an incentive and a location to pull from and the storage provider initiates everyting.  This is similar to current deal making protocols but there are key differences (deal proposals can't be cryptographically signed by a contract) so none of this software is quite written yet.  The lotus team is actively prototyping modifications to data transfer and deal making software to allow for miner initiated deals with client contracts.
+
+### Client Contract modular breakdown
+
 The client contract consists of three conceptual building blocks
 1. A way to add cids to its authorized set.  MVP relies on [contract creator setting directly](https://github.com/lotus-web3/client-contract/blob/main/src/DealClient.sol#L30)
 2. An authorization policy. MVP enforces [one provider per cid](https://github.com/lotus-web3/client-contract/blob/main/src/DealClient.sol#L36)
