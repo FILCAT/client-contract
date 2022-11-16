@@ -77,7 +77,7 @@ If you are looking for ideas the following is a non-exhaustive list of things yo
 
 ### Needs Research
 
-Pin IPFS hash directly -- there is a nuance with the filecoin deal cids in relation to the cids of their underlying data. Deal cids are the merkle root of a particular serialization and specially padded chunk of data.  So if you want to add an arbitrary IPFS dag the raw cid will in general be different than the cid tracked by filecoin.  An active area of research is developing a protocol / cryptographic proving techniques for estabilishing some provable link between these two cids so that a client can prove with some confidence that a proposal deal cid matches with the client's desired deal cid.  
+Pin IPFS hash directly -- there is a nuance with the filecoin deal cids in relation to the cids of their underlying data. Deal cids are the merkle root of a particular serialization and specially padded chunk of data.  So if you want to add an arbitrary IPFS dag the raw cid will in general be different than the cid tracked by filecoin.  An active area of research is developing a protocol / cryptographic proving techniques for estabilishing some provable link between these two cids so that a client can prove with some confidence that a proposal deal cid matches with the client's desired deal cid.  Some [good ideas are proposed here](https://www.notion.so/pl-strflt/Proposal-Non-interactive-Proof-of-Wrong-Merkle-Tree-Translation-9736f54e911241ce8bfb23b9cee29709).
 
 
 ## Coming up
