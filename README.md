@@ -22,7 +22,7 @@ to compile the contracts.
 
 ### Use
 
-TODO: Link to a video demo
+See [this demo](https://www.youtube.com/watch?v=2Cpahhb0IW0) for example operation of the mvp contract
 
 ### Build
 
