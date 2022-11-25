@@ -91,3 +91,8 @@ This repo hopes to track many community-crafted variants of the basic mvp deal c
 2. No code changes required here, but once wallaby runs a true builtin actors api we will be testing out filecoin native payment models for the client contract: both adding the contract as a FIL+ client and adding FIL payments to the market.
 3. The storage provider deal making and data transfer model will need to change to support deal proposals with non signing contracts.  We're looking into prototyping and designing supportive changes in the relevant code bases (lotus-miner, boost) and protocols (deal proposal protocol, ask protocol).
 4. Assuming this experimental model proves itself out we are going to pursue basic fil-infra use of this new data storage mechanism.  We're interested in building tools for storing blockchain data generally and filecoin state and message data archives in particular.
+
+
+## Contact us
+You can find us easily at the Filecoin Slack workspace(filecoin.io/slack) - [#fil-lotus-dev](https://filecoinproject.slack.com/archives/CP50PPW2X)
+
