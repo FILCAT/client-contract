@@ -2,7 +2,7 @@
 ![Screen Shot 2022-11-16 at 11 10 33 AM](https://user-images.githubusercontent.com/5515260/202233423-691bca60-06b7-41d1-a808-e182119778ec.png)![Screen Shot 2022-11-16 at 11 22 28 AM](https://user-images.githubusercontent.com/5515260/202236079-cbb4d257-5abf-458f-b18f-775ceca29170.png)
 ![Screen Shot 2022-11-16 at 11 18 57 AM](https://user-images.githubusercontent.com/5515260/202235551-09c82221-0e5f-4e3c-aa36-fd2fbe170f20.png)
 
-**A workshop for programming the filecoin deal market and making FVM Data DAOs**
+**A workshop for programming the filecoin deal market and making Filecoin Data DAOs, thats FVM compatiable.**
 
 This repo contains 
 1. [A solidity contract template](https://github.com/lotus-web3/client-contract/blob/main/src/DealClient.sol#L15) that stores data with the filecoin builtin deal market
