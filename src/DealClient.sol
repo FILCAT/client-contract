@@ -46,7 +46,7 @@ contract DealClient {
         cidProviders[cidraw][provider] = true;
     }
 
-    function handle_filecoin_method(uint64, uint64 method, bytes calldata params) public {
+    function handle_filecoin_method(uint64 method, uint64, bytes calldata params) public {
         // dispatch methods
         if (method == AUTHORIZE_MESSAGE_METHOD_NUM) {
             bytes calldata deal_proposal_cbor_bytes = specific_authenticate_message_params_parse(params);
