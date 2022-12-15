@@ -55,9 +55,9 @@ contract DealClient {
             (bytes calldata cidraw, bytes calldata provider, uint size) = specific_deal_proposal_cbor_parse(deal_proposal_cbor_bytes);
             authorizeData(cidraw, provider, size);
         } else if (method == DATACAP_RECEIVER_HOOK_METHOD_NUM) {
-            emit ReceivedDataCap("DataCap Received!");
-	    } else {
-            revert("the filecoin method that was called is not handled");
+             emit ReceivedDataCap("DataCap Received!");
+        } else {
+             revert("the filecoin method that was called is not handled");
         }
     }
 }
