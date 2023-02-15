@@ -1,0 +1,29 @@
+{
+  "name": "@zondax/solidity-bignumber",
+  "version": "0.1.0",
+  "description": "Full BigNumber library implementation for Solidity.",
+  "main": "",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zondax/solidity-BigNumber.git"
+  },
+  "keywords": [],
+  "author": "Zondax AG <hello@zondax.ch>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Zondax/solidity-BigNumber/issues"
+  },
+  "homepage": "https://github.com/Zondax/solidity-BigNumber#readme",
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "prettier": "^2.7.1",
+    "prettier-plugin-solidity": "^1.0.0"
+  },
+  "dependencies": {}
+}

@@ -45,6 +45,26 @@ function specific_authenticate_message_params_parse(bytes calldata cbor_params )
 
 }
 
+function specific_market_deal_notify_params_parse(bytes calldata cbor_params ) pure returns (bytes calldata proposal_bytes, uint64 deal_id) {
+    uint byteIdx = 0;
+    // Expect a struct with two fields
+    assert(cbor_params[0] == hex"82");
+    byteIdx += 1;
+
+    // Read deal proposal bytes
+    uint8 maj;
+    uint len;
+    (maj, len, byteIdx) = parse_cbor_header(cbor_params, byteIdx);
+    assert(maj == MajByteString);
+    proposal_bytes = cbor_params[byteIdx:byteIdx+len];
+    byteIdx += len;
+
+    // Read deal_id
+    (maj, deal_id, byteIdx) = parse_cbor_header(cbor_params, byteIdx);
+    assert(maj == MajUnsignedInt);
+
+}
+
 function specific_deal_proposal_cbor_parse(bytes calldata cbor_deal_proposal) pure returns (bytes calldata rawcid, bytes calldata provider, uint size){
     // Shortcut: expect a struct with 11 fields and for the first field to start with a cid tag
     // 11 field struct

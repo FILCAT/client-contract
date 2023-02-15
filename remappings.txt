@@ -1,0 +1,4 @@
+@openzeppelin/=node_modules/@openzeppelin/
+@zondax/=node_modules/@zondax/
+@ensdomains/=node_modules/@ensdomains/
+solidity-cborutils/=node_modules/solidity-cborutils/
