@@ -150,7 +150,8 @@ contract DealClient {
             authenticateMessage(params);
         } else if (method == MARKET_NOTIFY_DEAL_METHOD_NUM) {
             dealNotify(params);
-        else if (method == DATACAP_RECEIVER_HOOK_METHOD_NUM) {
+
+        } else if (method == DATACAP_RECEIVER_HOOK_METHOD_NUM) {
             receiveDataCap(params);
         } else {
             revert("the filecoin method that was called is not handled");
