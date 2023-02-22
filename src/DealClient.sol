@@ -9,7 +9,7 @@ import { BigInt } from "@zondax/filecoin-solidity/contracts/v0.8/cbor/BigIntCbor
 import { AccountCBOR } from "@zondax/filecoin-solidity/contracts/v0.8/cbor/AccountCbor.sol";
 import { MarketCBOR } from "@zondax/filecoin-solidity/contracts/v0.8/cbor/MarketCbor.sol";
 import { BytesCBOR } from "@zondax/filecoin-solidity/contracts/v0.8/cbor/BytesCbor.sol";
-import { BigNumbers, BigNumber } from "https://github.com/Zondax/filecoin-solidity/blob/master/contracts/v0.8/external/BigNumbers.sol";
+import { BigNumbers, BigNumber } from "@zondax/filecoin-solidity/contracts/v0.8/external/BigNumbers.sol";
 
 import "hardhat/console.sol";
 
