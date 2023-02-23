@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
+
 import { MarketAPI } from "@zondax/filecoin-solidity/contracts/v0.8/MarketAPI.sol";
 import { CommonTypes } from "@zondax/filecoin-solidity/contracts/v0.8/types/CommonTypes.sol";
 import { MarketTypes } from "@zondax/filecoin-solidity/contracts/v0.8/types/MarketTypes.sol";
@@ -32,6 +33,7 @@ struct ProviderSet {
     bool valid;
 }
 
+
 contract DealClient {
 
     using AccountCBOR for *;
@@ -57,14 +59,11 @@ contract DealClient {
 
     // FOR DEMO PURPOSES
     function simpleDealProposal(bytes memory pieceCid, uint64 pieceSize) public {
-        console.log("test log");
         MarketTypes.DealProposal memory deal;
         deal.piece_cid = pieceCid;
         deal.piece_size = pieceSize;
 
         bytes memory serDeal = deal.serializeDealProposal();
-        console.log("serialized");
-
         makeDealProposal(serDeal);
 
     }
@@ -77,12 +76,10 @@ contract DealClient {
         // creates a unique ID for the deal proposal -- there are many ways to do this
         bytes32 _id = keccak256(abi.encodePacked(block.timestamp, msg.sender));
         dealProposals[_id] = deal;
-        console.log("hash deal prop");
 
         MarketTypes.DealProposal memory proposal = deal.deserializeDealProposal();
-        console.log("deser");
-
         pieceToProposal[proposal.piece_cid] = ProposalIdSet(_id, true);
+
         // writes the proposal metadata to the event log
         emit DealProposalCreate(_id, proposal.piece_size, proposal.verified_deal, proposal.storage_price_per_epoch);
     }
@@ -92,7 +89,8 @@ contract DealClient {
         return dealProposals[proposalId];
     }
 
-    function authenticateMessage(bytes memory params) view public {
+
+    function authenticateMessage(bytes memory params) view internal {
 
         AccountTypes.AuthenticateMessageParams memory amp = params.deserializeAuthenticateMessageParams();
         MarketTypes.DealProposal memory proposal = amp.message.deserializeDealProposal();
@@ -101,7 +99,7 @@ contract DealClient {
         require(!pieceProviders[proposal.piece_cid].valid, "deal failed policy check: provider already claimed this cid");
     }
 
-    function dealNotify(bytes memory params) public {
+    function dealNotify(bytes memory params) internal {
 
         MarketTypes.MarketDealNotifyParams memory mdnp = params.deserializeMarketDealNotifyParams();
         MarketTypes.DealProposal memory proposal = mdnp.dealProposal.deserializeDealProposal();
@@ -111,38 +109,50 @@ contract DealClient {
 
         pieceProviders[proposal.piece_cid] = ProviderSet(proposal.provider, true);
         pieceDeals[proposal.piece_cid] = mdnp.dealId;
+
     }
 
     // client - filecoin address byte format
-    function addBalance(bytes memory client, uint256 value) internal {
+    function addBalance(bytes memory client, uint256 value) public {
 
         require(msg.sender == owner);
 
         // TODO:: remove first arg
-        // convert address(this) -> filecoin byte addr format
+        // change to ethAddr -> actorId and use that in the below API
 
         MarketAPI.addBalance(client, value);
     }
 
+    // Below 2 funcs need to go to filecoin.sol
     function uintToBigInt(uint256 value) internal view returns(BigInt memory) {
         BigNumber memory bigNumVal = BigNumbers.init(value, false);
         BigInt memory bigIntVal = BigInt(bigNumVal.val, bigNumVal.neg);
         return bigIntVal;
     }
 
+    function bigIntToUint(BigInt memory bigInt) internal view returns (uint256) {
+        BigNumber memory bigNumUint = BigNumbers.init(bigInt.val, bigInt.neg);
+        uint256 bigNumExtractedUint = uint256(bytes32(bigNumUint.val));
+        return bigNumExtractedUint;
+    }
 
-    function withdrawBalance(bytes memory client, uint256 value) public returns(BigInt memory) {
+
+    function withdrawBalance(bytes memory client, uint256 value) public returns(uint) {
+        // TODO:: remove first arg
+        // change to ethAddr -> actorId and use that in the below API
+
         require(msg.sender == owner);
 
         MarketTypes.WithdrawBalanceParams memory params = MarketTypes.WithdrawBalanceParams(client, uintToBigInt(value));
         MarketTypes.WithdrawBalanceReturn memory ret = MarketAPI.withdrawBalance(params);
-        return ret.amount_withdrawn;
+
+        return bigIntToUint(ret.amount_withdrawn);
     }
 
     function receiveDataCap(bytes memory params) internal {
         emit ReceivedDataCap("DataCap Received!");
+        // Add get datacap balance api and store datacap amount
     }
-
 
     function handle_filecoin_method(uint64 method, uint64, bytes memory params) public {
         // dispatch methods
@@ -150,8 +160,8 @@ contract DealClient {
             authenticateMessage(params);
         } else if (method == MARKET_NOTIFY_DEAL_METHOD_NUM) {
             dealNotify(params);
-
-        } else if (method == DATACAP_RECEIVER_HOOK_METHOD_NUM) {
+        }
+        else if (method == DATACAP_RECEIVER_HOOK_METHOD_NUM) {
             receiveDataCap(params);
         } else {
             revert("the filecoin method that was called is not handled");
