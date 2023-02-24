@@ -78,8 +78,6 @@ contract DealClient {
         dealProposals[_id] = deal;
 
         ContractDealProposal memory proposal = deserializeContractDealProposal(deal);
-
-        MarketTypes.DealProposal memory proposal = deal.deserializeDealProposal();
         pieceToProposal[proposal.piece_cid] = ProposalIdSet(_id, true);
 
         // writes the proposal metadata to the event log
