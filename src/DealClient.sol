@@ -11,6 +11,7 @@ import { AccountCBOR } from "@zondax/filecoin-solidity/contracts/v0.8/cbor/Accou
 import { MarketCBOR } from "@zondax/filecoin-solidity/contracts/v0.8/cbor/MarketCbor.sol";
 import { BytesCBOR } from "@zondax/filecoin-solidity/contracts/v0.8/cbor/BytesCbor.sol";
 import { BigNumbers, BigNumber } from "https://github.com/Zondax/filecoin-solidity/blob/master/contracts/v0.8/external/BigNumbers.sol";
+import { ContractDealProposal, serializeContractDealProposal, deserializeContractDealProposal} from "./ContractDealProposal.sol";
 
 import "hardhat/console.sol";
 
@@ -33,7 +34,6 @@ struct ProviderSet {
     bool valid;
 }
 
-
 contract DealClient {
 
     using AccountCBOR for *;
@@ -49,7 +49,7 @@ contract DealClient {
     mapping(bytes => uint64) public pieceDeals; // commP -> deal ID
 
     event ReceivedDataCap(string received);
-    event DealProposalCreate(bytes32 indexed id, uint64 size, bool indexed verified, BigInt price);
+    event DealProposalCreate(bytes32 indexed id, uint64 size, bool indexed verified, uint256 price);
 
     address public owner;
 
@@ -59,11 +59,12 @@ contract DealClient {
 
     // FOR DEMO PURPOSES
     function simpleDealProposal(bytes memory pieceCid, uint64 pieceSize) public {
-        MarketTypes.DealProposal memory deal;
+        ContractDealProposal memory deal;
         deal.piece_cid = pieceCid;
         deal.piece_size = pieceSize;
+        deal.storage_price_per_epoch = uintToBigInt(0);
 
-        bytes memory serDeal = deal.serializeDealProposal();
+        bytes memory serDeal = serializeContractDealProposal(deal);
         makeDealProposal(serDeal);
 
     }
@@ -71,17 +72,18 @@ contract DealClient {
     function makeDealProposal(bytes memory deal) public {
         // TODO: evaluate permissioning here
         require(msg.sender == owner);
-        console.log("start of make deal proposal");
 
         // creates a unique ID for the deal proposal -- there are many ways to do this
         bytes32 _id = keccak256(abi.encodePacked(block.timestamp, msg.sender));
         dealProposals[_id] = deal;
 
+        ContractDealProposal memory proposal = deserializeContractDealProposal(deal);
+
         MarketTypes.DealProposal memory proposal = deal.deserializeDealProposal();
         pieceToProposal[proposal.piece_cid] = ProposalIdSet(_id, true);
 
         // writes the proposal metadata to the event log
-        emit DealProposalCreate(_id, proposal.piece_size, proposal.verified_deal, proposal.storage_price_per_epoch);
+        emit DealProposalCreate(_id, proposal.piece_size, proposal.verified_deal, bigIntToUint(proposal.storage_price_per_epoch));
     }
 
 
@@ -153,6 +155,7 @@ contract DealClient {
         emit ReceivedDataCap("DataCap Received!");
         // Add get datacap balance api and store datacap amount
     }
+
 
     function handle_filecoin_method(uint64 method, uint64, bytes memory params) public {
         // dispatch methods
