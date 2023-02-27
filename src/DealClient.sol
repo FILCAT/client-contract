@@ -26,6 +26,12 @@ TODO
     }
 }
 
+struct MarketDealNotifyParams {
+    MarketTypes.DealProposal proposal;
+    uint64 dealId;
+}
+
+
 struct ProposalIdSet {
     bytes32 proposalId;
     bool valid;
@@ -106,7 +112,7 @@ contract DealClient {
         require(!pieceProviders[proposal.piece_cid.data].valid, "deal failed policy check: provider already claimed this cid");
     }
 
-    function dealNotify(MarketTypes.MarketDealNotifyParams memory mdnp) internal {
+    function dealNotify(MarketDealNotifyParams memory mdnp) internal {
 
         MarketTypes.DealProposal memory proposal = mdnp.proposal;
 
