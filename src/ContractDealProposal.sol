@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
+import "@zondax/filecoin-solidity/contracts/v0.8/external/CBOR.sol";
 import "@zondax/filecoin-solidity/contracts/v0.8/cbor/BigIntCbor.sol";
-import "solidity-cborutils/contracts/CBOR.sol";
 import "@zondax/filecoin-solidity/contracts/v0.8/utils/CborDecode.sol";
 import "@zondax/filecoin-solidity/contracts/v0.8/cbor/FilecoinCbor.sol";
+import { CommonTypes } from "@zondax/filecoin-solidity/contracts/v0.8/types/CommonTypes.sol";
 
 
 using CBOR for CBOR.CBORBuffer;
 using CBORDecoder for bytes;
-using BigIntCBOR for BigInt;
 using BigIntCBOR for bytes;
-using FilecoinCbor for CBOR.CBORBuffer;
+using BigIntCBOR for CommonTypes.BigInt;
 
 
 struct ContractDealProposal {
@@ -23,9 +23,9 @@ struct ContractDealProposal {
     string label;
     int64 start_epoch;
     int64 end_epoch;
-    BigInt storage_price_per_epoch;
-    BigInt provider_collateral;
-    BigInt client_collateral;
+    CommonTypes.BigInt storage_price_per_epoch;
+    CommonTypes.BigInt provider_collateral;
+    CommonTypes.BigInt client_collateral;
 
     string version;
     bytes params;
@@ -38,7 +38,7 @@ function serializeContractDealProposal(ContractDealProposal memory dealProposal)
 
     buf.startFixedArray(13);
 
-    buf.writeCid(dealProposal.piece_cid);
+    buf.writeBytes(dealProposal.piece_cid);
     buf.writeUInt64(dealProposal.piece_size);
     buf.writeBool(dealProposal.verified_deal);
     buf.writeBytes(dealProposal.client);
@@ -47,6 +47,7 @@ function serializeContractDealProposal(ContractDealProposal memory dealProposal)
     buf.writeInt64(dealProposal.start_epoch);
     buf.writeInt64(dealProposal.end_epoch);
     buf.writeBytes(dealProposal.storage_price_per_epoch.serializeBigInt());
+    //buf.writeBytes(params.deals[i].proposal.storage_price_per_epoch.serializeBigInt()); // TODO LOOK AT why deals[i] was here
     buf.writeBytes(dealProposal.provider_collateral.serializeBigInt());
     buf.writeBytes(dealProposal.client_collateral.serializeBigInt());
     buf.writeString(dealProposal.version);
