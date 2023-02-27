@@ -13,6 +13,22 @@ using CBORDecoder for bytes;
 using BigIntCBOR for bytes;
 using BigIntCBOR for CommonTypes.BigInt;
 
+struct ContractDealProposalNew {
+    CommonTypes.Cid piece_cid;
+    uint64 piece_size;
+    bool verified_deal;
+    CommonTypes.FilAddress client;
+    CommonTypes.FilAddress provider;
+    string label;
+    int64 start_epoch;
+    int64 end_epoch;
+    CommonTypes.BigInt storage_price_per_epoch;
+    CommonTypes.BigInt provider_collateral;
+    CommonTypes.BigInt client_collateral;
+    string version;
+    bytes params;
+}
+
 
 struct ContractDealProposal {
     bytes piece_cid;
