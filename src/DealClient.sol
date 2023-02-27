@@ -66,6 +66,12 @@ contract DealClient {
         owner = msg.sender;
     }
 
+    function simpleDealProposal(string memory pieceCid, uint64 pieceSize) public {
+        bytes memory cid = bytes(pieceCid);
+        simpleDealProposal(cid, pieceSize);
+    }
+
+
     // FOR DEMO PURPOSES
     function simpleDealProposal(bytes memory pieceCid, uint64 pieceSize) public {
         ContractDealProposalNew memory deal;
