@@ -15,6 +15,7 @@ This repo contains
 To build and test you will need to install [foundry](https://github.com/foundry-rs/foundry/blob/master/README.md) which depends on `cargo`.  After installing foundry simple run
 
 ```sh
+npm install
 make build
 ```
 
