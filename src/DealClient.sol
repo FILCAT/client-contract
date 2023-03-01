@@ -16,8 +16,6 @@ import { Misc } from "@zondax/filecoin-solidity/contracts/v0.8/utils/Misc.sol";
 import { FilAddresses } from "@zondax/filecoin-solidity/contracts/v0.8/utils/FilAddresses.sol";
 import { MarketDealNotifyParams, deserializeMarketDealNotifyParams, serializeDealProposal, deserializeDealProposal } from "./Types.sol";
 
-import "hardhat/console.sol";
-
 using CBOR for CBOR.CBORBuffer;
 
 contract MockMarket {
