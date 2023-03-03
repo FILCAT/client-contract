@@ -2,11 +2,8 @@
 pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
-//import "../src/DealClient.sol";
 import "../src/CBORParse.sol";
 import "../src/DealClient.sol";
-import {DealRequest, ExtraParamsV1, ProposalIdSet } from "../src/DealClient.sol";
-
 
 contract DealClientTest is Test {
     DealClient public client;
