@@ -88,7 +88,7 @@ contract DealClient {
     mapping(bytes => ProposalIdSet) public pieceToProposal; // commP -> dealProposalID
     mapping(bytes => ProviderSet) public pieceProviders; // commP -> provider
     mapping(bytes => uint64) public pieceDeals; // commP -> deal ID
-    DealRequest[] deals;
+    DealRequest[] public deals;
 
     event ReceivedDataCap(string received);
     event DealProposalCreate(bytes32 indexed id, uint64 size, bool indexed verified, uint256 price);
@@ -97,6 +97,22 @@ contract DealClient {
 
     constructor() {
         owner = msg.sender;
+    }
+
+    function getProviderSet(bytes calldata cid) public view returns (ProviderSet memory){
+      return pieceProviders[cid];
+    }
+
+    function getProposalIdSet(bytes calldata cid) public view returns (ProposalIdSet memory){
+      return pieceToProposal[cid];
+    }
+
+    function dealsLength() public view returns (uint256) {
+      return deals.length;
+    }
+
+    function getDealByIndex(uint256 index) public view returns (DealRequest memory){
+      return deals[index];
     }
 
     function makeDealProposal(DealRequest calldata deal) public {

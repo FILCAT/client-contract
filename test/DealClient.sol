@@ -1,30 +1,71 @@
-//// SPDX-License-Identifier: UNLICENSED
-//pragma solidity ^0.8.13;
-//
-//import "forge-std/Test.sol";
-//import "../src/DealClient.sol";
-//
-//
-//contract DealClientTest is Test {
-//    DealClient public client;
-//    MockMarket public relay;
-//    bytes testCID;
-//    bytes testShortCID;
-//    bytes testProvider;
-//    bytes testOtherProvider;
-//
-//    function setUp() public {
-//        client = new DealClient();
-//        relay = new MockMarket();
-//        testCID = hex"000181E2039220206B86B273FF34FCE19D6B804EFF5A3F5747ADA4EAA22F1D49C01E52DDB7875B4B";
-//        testShortCID = hex"42";
-//        testProvider = hex"0066";
-//        testOtherProvider = hex"00EE";
-//    }
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.13;
 
-    /* 
-        COMMENTING OUT TESTS
-        TODO FIX TESTS
+import "forge-std/Test.sol";
+import "../src/DealClient.sol";
+
+contract DealClientTest is Test {
+    DealClient public client;
+    MockMarket public relay;
+    bytes testCID;
+    bytes testShortCID;
+    bytes testProvider;
+    bytes testOtherProvider;
+
+    function setUp() public {
+        client = new DealClient();
+        relay = new MockMarket();
+        testCID = hex"000181E2039220206B86B273FF34FCE19D6B804EFF5A3F5747ADA4EAA22F1D49C01E52DDB7875B4B";
+        testShortCID = hex"42";
+        testProvider = hex"0066";
+        testOtherProvider = hex"00EE";
+    }
+
+    function createDealRequest() public view returns (DealRequest memory) {
+        DealRequest memory request = DealRequest({
+            piece_cid: testCID,
+            piece_size: 2048,
+            verified_deal: false,
+            label: "",
+            start_epoch: 0,
+            end_epoch: 0,
+            storage_price_per_epoch: 0,
+            provider_collateral: 0,
+            client_collateral: 0,
+            extra_params_version: 0,
+            extra_params: ExtraParamsV1({
+                location_ref: "",
+                car_size: 0,
+                skip_ipni_announce: false,
+                remove_unsealed_copy: false
+            })
+        });
+        return request;
+    }
+
+
+    function testMakeDealProposal() public {
+        require(client.dealsLength() == 0, "Expect no deals");
+        client.makeDealProposal(createDealRequest());
+        require(client.dealsLength() == 1, "Expect one deal");
+
+        ProposalIdSet memory proposalIdSet = client.getProposalIdSet(testCID);
+        require(proposalIdSet.valid, "expected to have valid Proposal");
+        DealRequest memory deal = client.getDealByIndex(0);
+        require(deal.piece_size == 2048, "unexpected cid size in client after setting");
+
+        ProviderSet memory providerSet = client.getProviderSet(testCID);
+        require(!providerSet.valid, "should not be valid before a cid is authorized");
+
+        // non-added cid has expected state
+        ProposalIdSet memory proposalIdSetShort = client.getProposalIdSet(testShortCID);
+        require(!proposalIdSetShort.valid, "expected to have valid Proposal");
+        ProviderSet memory providerSetShort = client.getProviderSet(testShortCID);
+        require(!providerSetShort.valid, "should not be valid before a cid is authorized");
+
+    }
+
+/*
 
     function testMockMarket() public {
         client.addCID(testCID, 2048);
@@ -38,20 +79,6 @@
         vm.expectRevert(bytes("client contract failed to authorize deal publish"));
         relay.publish_deal(messageAuthParams, a);
     }
-
-    function testAddCIDs() public {
-        // added cid has expected state
-        client.addCID(testCID, 2048);
-        require(client.cidSet(testCID), "expected to find cid in client set after adding");
-        require(client.cidSizes(testCID) == 2048, "unexpected cid size in client after setting");
-        require(!client.cidProviders(testCID, testProvider), "all providers should be set to false before a cid is authorized");
-
-        // non-added cid has expected state
-        require(!client.cidSet(testShortCID), "cid not added but marked as added");
-        require(client.cidSizes(testShortCID) == 0, "cid not added should have data size marked as 0");
-        require(!client.cidProviders(testShortCID, testProvider), "all providers should be set to false before a cid is added");
-    }
-
     function testAuthorizeData() public {
         // add cid, authorize data, wrong size should fail
         client.addCID(testCID, 2048);
@@ -299,19 +326,4 @@ contract ParseCBORTest is Test {
         require(m == 72623859790381311, "unexpected uint64 sliced out");
     }
     */
-
-//
-//    function sliceUint8Bytes(bytes calldata bs, uint start) external pure returns(uint8) {
-//        return slice_uint8(bs, start);
-//    }
-//    function sliceUint16Bytes(bytes calldata bs, uint start) external pure returns(uint16) {
-//        return slice_uint16(bs, start);
-//    }
-//    function sliceUint32Bytes(bytes calldata bs, uint start) external pure returns(uint32) {
-//        return slice_uint32(bs, start);
-//    }
-//    function sliceUint64Bytes(bytes calldata bs, uint start) external pure returns(uint64) {
-//        return slice_uint64(bs, start);
-//    }
-//
-//}
+}
