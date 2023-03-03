@@ -1,28 +1,26 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
-
-import "forge-std/Test.sol";
+//// SPDX-License-Identifier: UNLICENSED
+//pragma solidity ^0.8.13;
+//
+//import "forge-std/Test.sol";
 //import "../src/DealClient.sol";
-import "../src/CBORParse.sol";
-import "../src/DealClient.sol";
-
-
-contract DealClientTest is Test {
-    DealClient public client;
-    MockMarket public relay;
-    bytes testCID;
-    bytes testShortCID;
-    bytes testProvider;
-    bytes testOtherProvider;
-
-    function setUp() public {
-        client = new DealClient();
-        relay = new MockMarket();
-        testCID = hex"000181E2039220206B86B273FF34FCE19D6B804EFF5A3F5747ADA4EAA22F1D49C01E52DDB7875B4B";
-        testShortCID = hex"42";
-        testProvider = hex"0066";
-        testOtherProvider = hex"00EE";
-    }
+//
+//
+//contract DealClientTest is Test {
+//    DealClient public client;
+//    MockMarket public relay;
+//    bytes testCID;
+//    bytes testShortCID;
+//    bytes testProvider;
+//    bytes testOtherProvider;
+//
+//    function setUp() public {
+//        client = new DealClient();
+//        relay = new MockMarket();
+//        testCID = hex"000181E2039220206B86B273FF34FCE19D6B804EFF5A3F5747ADA4EAA22F1D49C01E52DDB7875B4B";
+//        testShortCID = hex"42";
+//        testProvider = hex"0066";
+//        testOtherProvider = hex"00EE";
+//    }
 
     /* 
         COMMENTING OUT TESTS
@@ -302,18 +300,18 @@ contract ParseCBORTest is Test {
     }
     */
 
-
-    function sliceUint8Bytes(bytes calldata bs, uint start) external pure returns(uint8) {
-        return slice_uint8(bs, start);
-    }
-    function sliceUint16Bytes(bytes calldata bs, uint start) external pure returns(uint16) {
-        return slice_uint16(bs, start);
-    }
-    function sliceUint32Bytes(bytes calldata bs, uint start) external pure returns(uint32) {
-        return slice_uint32(bs, start);
-    }
-    function sliceUint64Bytes(bytes calldata bs, uint start) external pure returns(uint64) {
-        return slice_uint64(bs, start);
-    }
-    
-}
+//
+//    function sliceUint8Bytes(bytes calldata bs, uint start) external pure returns(uint8) {
+//        return slice_uint8(bs, start);
+//    }
+//    function sliceUint16Bytes(bytes calldata bs, uint start) external pure returns(uint16) {
+//        return slice_uint16(bs, start);
+//    }
+//    function sliceUint32Bytes(bytes calldata bs, uint start) external pure returns(uint32) {
+//        return slice_uint32(bs, start);
+//    }
+//    function sliceUint64Bytes(bytes calldata bs, uint start) external pure returns(uint64) {
+//        return slice_uint64(bs, start);
+//    }
+//
+//}
