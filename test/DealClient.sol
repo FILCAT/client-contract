@@ -2,7 +2,6 @@
 pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
-import "../src/CBORParse.sol";
 import "../src/DealClient.sol";
 
 contract DealClientTest is Test {
@@ -327,19 +326,4 @@ contract ParseCBORTest is Test {
         require(m == 72623859790381311, "unexpected uint64 sliced out");
     }
     */
-
-
-    function sliceUint8Bytes(bytes calldata bs, uint start) external pure returns(uint8) {
-        return slice_uint8(bs, start);
-    }
-    function sliceUint16Bytes(bytes calldata bs, uint start) external pure returns(uint16) {
-        return slice_uint16(bs, start);
-    }
-    function sliceUint32Bytes(bytes calldata bs, uint start) external pure returns(uint32) {
-        return slice_uint32(bs, start);
-    }
-    function sliceUint64Bytes(bytes calldata bs, uint start) external pure returns(uint64) {
-        return slice_uint64(bs, start);
-    }
-    
 }
