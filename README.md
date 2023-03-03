@@ -15,6 +15,7 @@ This repo contains
 To build and test you will need to install [foundry](https://github.com/foundry-rs/foundry/blob/master/README.md) which depends on `cargo`.  After installing foundry simple run
 
 ```sh
+npm install
 make build
 ```
 
@@ -28,6 +29,11 @@ See [this demo](https://www.youtube.com/watch?v=2Cpahhb0IW0) for example operati
 
 If you build an extension to this MVP contract this repo hopes to be a good home for it.  Follow the [contribution guidelines](https://github.com/lotus-web3/client-contract/blob/main/CONTRIBUTING.md) to add your extended contracts back here where they can be shared with other developers.
 
+### Compile to hyperspace
+
+```
+forge create --rpc-url https://api.hyperspace.node.glif.io/rpc/v1 --private-key $PRIVATE_KEY src/DealClient.sol:DealClient
+```
 
 ## Core Idea
 
