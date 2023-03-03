@@ -194,10 +194,10 @@ contract DealClient {
     // If less than the given amount is available, the full escrow balance is withdrawn
     // @client - Eth address where the balance is withdrawn to. This can be the contract address or an external address
     // @value - amount to be withdrawn in escrow in attoFIL
-    function withdrawBalance(bytes memory client, uint256 value) public returns(uint) {
+    function withdrawBalance(address client, uint256 value) public returns(uint) {
         require(msg.sender == owner);
 
-        MarketTypes.WithdrawBalanceParams memory params = MarketTypes.WithdrawBalanceParams(getDelegatedAddress(address(client)), uintToBigInt(value));
+        MarketTypes.WithdrawBalanceParams memory params = MarketTypes.WithdrawBalanceParams(getDelegatedAddress(client), uintToBigInt(value));
         CommonTypes.BigInt memory ret = MarketAPI.withdrawBalance(params);
 
         return bigIntToUint(ret);
