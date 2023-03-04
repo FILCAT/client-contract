@@ -2,3 +2,5 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 forge test
+npx lint-staged
+

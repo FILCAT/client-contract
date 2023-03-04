@@ -17,6 +17,6 @@
     }
   },
   "lint-staged": {
-    "*.sol": ["npx prettier --write", "git add"]
-  },
+    "*.sol": ["npx prettier --write"]
+  }
 }
