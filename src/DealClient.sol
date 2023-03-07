@@ -18,16 +18,13 @@ import { MarketDealNotifyParams, deserializeMarketDealNotifyParams, serializeDea
 
 using CBOR for CBOR.CBORBuffer;
 
-contract MockMarket {
-    function publish_deal(bytes memory raw_auth_params, address callee) public {
-        // calls standard filecoin receiver on message authentication api method number
-        (bool success, ) = callee.call(abi.encodeWithSignature("handle_filecoin_method(uint64,uint64,bytes)", 0, 2643134072, raw_auth_params));
-        require(success, "client contract failed to authorize deal publish");
-    }
-}
-
 struct ProposalIdSet {
     bytes32 proposalId;
+    bool valid;
+}
+
+struct ProposalIdx {
+    uint256 idx;
     bool valid;
 }
 
@@ -40,13 +37,9 @@ struct ProviderSet {
 // Proposal, but leaves out the provider, since any provider can pick up a deal broadcast by this
 // contract.
 struct DealRequest {
-    // To be cast to a CommonTypes.Cid
     bytes piece_cid;
     uint64 piece_size;
     bool verified_deal;
-    // To be cast to a CommonTypes.FilAddress
-    // bytes client_addr;
-    // CommonTypes.FilAddress provider;
     string label;
     int64 start_epoch;
     int64 end_epoch;
@@ -83,8 +76,10 @@ contract DealClient {
     uint64 constant public AUTHENTICATE_MESSAGE_METHOD_NUM = 2643134072;
     uint64 constant public DATACAP_RECEIVER_HOOK_METHOD_NUM = 3726118371;
     uint64 constant public MARKET_NOTIFY_DEAL_METHOD_NUM = 4186741094;
+    address constant public MARKET_ACTOR_ETH_ADDRESS = address(0xff00000000000000000000000000000000000005);
+    address constant public VERIFREG_ACTOR_ETH_ADDRESS = address(0xFF00000000000000000000000000000000000006);
 
-    mapping(bytes32 => uint256) public dealProposals; // contract deal id -> deal index
+    mapping(bytes32 => ProposalIdx) public dealProposals; // contract deal id -> deal index
     mapping(bytes => ProposalIdSet) public pieceToProposal; // commP -> dealProposalID
     mapping(bytes => ProviderSet) public pieceProviders; // commP -> provider
     mapping(bytes => uint64) public pieceDeals; // commP -> deal ID
@@ -115,7 +110,7 @@ contract DealClient {
       return deals[index];
     }
 
-    function makeDealProposal(DealRequest calldata deal) public {
+    function makeDealProposal(DealRequest calldata deal) public returns (bytes32) {
         // TODO: length check on byte fields
         require(msg.sender == owner);
 
@@ -123,19 +118,29 @@ contract DealClient {
         deals.push(deal);
 
         // creates a unique ID for the deal proposal -- there are many ways to do this
-        bytes32 _id = keccak256(abi.encodePacked(block.timestamp, msg.sender, index));
-        dealProposals[_id] = index;
+        bytes32 id = keccak256(abi.encodePacked(block.timestamp, msg.sender, index));
+        dealProposals[id] = ProposalIdx(index, true);
 
-        pieceToProposal[deal.piece_cid] = ProposalIdSet(_id, true);
+        pieceToProposal[deal.piece_cid] = ProposalIdSet(id, true);
 
         // writes the proposal metadata to the event log
-        emit DealProposalCreate(_id, deal.piece_size, deal.verified_deal, deal.storage_price_per_epoch);
+        emit DealProposalCreate(id, deal.piece_size, deal.verified_deal, deal.storage_price_per_epoch);
+
+        return id;
+    }
+
+
+    // helper function to get deal request based from id
+    function getDealRequest(bytes32 proposalId) view internal returns (DealRequest memory) {
+        ProposalIdx memory pi = dealProposals[proposalId];
+        require(pi.valid, "proposalId not available");
+
+        return deals[pi.idx];
     }
 
     // Returns a CBOR-encoded DealProposal.
     function getDealProposal(bytes32 proposalId) view public returns (bytes memory) {
-        // TODO make these array accesses safe.
-        DealRequest memory deal = deals[dealProposals[proposalId]];
+        DealRequest memory deal = getDealRequest(proposalId);
 
         MarketTypes.DealProposal memory ret;
         ret.piece_cid = CommonTypes.Cid(deal.piece_cid);
@@ -160,20 +165,24 @@ contract DealClient {
     }
 
     function getExtraParams(bytes32 proposalId) view public returns (bytes memory extra_params) {
-        // TODO make these array accesses safe.
-        DealRequest memory deal = deals[dealProposals[proposalId]];
+        DealRequest memory deal = getDealRequest(proposalId);
         return serializeExtraParamsV1(deal.extra_params);
     }
 
     function authenticateMessage(bytes memory params) view internal {
+        require(msg.sender == MARKET_ACTOR_ETH_ADDRESS, "msg.sender needs to be market actor f05");
+
         AccountTypes.AuthenticateMessageParams memory amp = params.deserializeAuthenticateMessageParams();
         MarketTypes.DealProposal memory proposal = deserializeDealProposal(amp.message);
 
-        require(pieceToProposal[proposal.piece_cid.data].valid, "piece cid must be added before authorizing");
-        require(!pieceProviders[proposal.piece_cid.data].valid, "deal failed policy check: provider already claimed this cid");
+        bytes memory pieceCid = proposal.piece_cid.data;
+        require(pieceToProposal[pieceCid].valid, "piece cid must be added before authorizing");
+        require(!pieceProviders[pieceCid].valid, "deal failed policy check: provider already claimed this cid");
     }
 
     function dealNotify(bytes memory params) internal {
+        require(msg.sender == MARKET_ACTOR_ETH_ADDRESS, "msg.sender needs to be market actor f05");
+
         MarketDealNotifyParams memory mdnp = deserializeMarketDealNotifyParams(params);
         MarketTypes.DealProposal memory proposal = deserializeDealProposal(mdnp.dealProposal);
 
@@ -220,6 +229,7 @@ contract DealClient {
     }
 
     function receiveDataCap(bytes memory params) internal {
+        require(msg.sender == VERIFREG_ACTOR_ETH_ADDRESS, "msg.sender needs to be verifreg actor f06");
         emit ReceivedDataCap("DataCap Received!");
         // Add get datacap balance api and store datacap amount
     }
