@@ -138,6 +138,7 @@ contract DealClient {
         return deals[pi.idx];
     }
 
+
     // Returns a CBOR-encoded DealProposal.
     function getDealProposal(bytes32 proposalId) view public returns (bytes memory) {
         DealRequest memory deal = getDealRequest(proposalId);
