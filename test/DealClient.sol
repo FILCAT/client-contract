@@ -3,6 +3,17 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 import "../src/DealClient.sol";
+import { MarketTypes } from "@zondax/filecoin-solidity/contracts/v0.8/types/MarketTypes.sol";
+import { serializeDealProposal, deserializeDealProposal } from "../src/Types.sol";
+
+contract MockMarket {
+    function publish_deal(bytes memory raw_auth_params, address callee) public {
+        // calls standard filecoin receiver on message authentication api method number
+        (bool success, ) = callee.call(abi.encodeWithSignature("handle_filecoin_method(uint64,uint64,bytes)", 0, 2643134072, raw_auth_params));
+        require(success, "client contract failed to authorize deal publish");
+    }
+}
+
 
 contract DealClientTest is Test {
     DealClient public client;
@@ -63,6 +74,20 @@ contract DealClientTest is Test {
         ProviderSet memory providerSetShort = client.getProviderSet(testShortCID);
         require(!providerSetShort.valid, "should not be valid before a cid is authorized");
 
+    }
+
+
+    function testGetDealProposal() public {
+        bytes32 requestId = client.makeDealProposal(createDealRequest());
+
+        bytes memory cborDealProposal = client.getDealProposal(requestId);
+        MarketTypes.DealProposal memory dp = deserializeDealProposal(cborDealProposal);
+        require(keccak256(testCID) == keccak256(dp.piece_cid.data));
+//        require(dp.provider == FilAddresses.fromActorID(0));
+
+        // Expect a revert for an unknown proposal ID
+        vm.expectRevert();
+        client.getDealProposal(bytes32(0));
     }
 
 /*
