@@ -214,14 +214,14 @@ contract DealClient {
         );
 
         bytes memory pieceCid = proposal.piece_cid.data;
-        require(
-            pieceToProposal[pieceCid].valid,
-            "piece cid must be added before authorizing"
-        );
-        require(
-            !pieceProviders[pieceCid].valid,
-            "deal failed policy check: provider already claimed this cid"
-        );
+        require(pieceToProposal[pieceCid].valid, "piece cid must be added before authorizing");
+        require(!pieceProviders[pieceCid].valid, "deal failed policy check: provider already claimed this cid");
+
+        DealRequest memory req = getDealRequest(pieceToProposal[pieceCid].proposalId);
+        require(proposal.verified_deal == req.verified_deal, "verified_deal param mismatch");
+        require(bigIntToUint(proposal.storage_price_per_epoch) <= req.storage_price_per_epoch, "storage price greater than request amount");
+        require(bigIntToUint(proposal.client_collateral) < req.client_collateral, "client collateral greater than request amount");
+
     }
 
     function dealNotify(bytes memory params) internal {
