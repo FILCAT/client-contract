@@ -59,7 +59,7 @@ The client contract consists of three conceptual building blocks
 
 ### How it works with Storage Providers and actual transfer of data
 
-Contract clients can work with an offchain party synchronizing with the chain and pushing deal data to miners. Alternatively contract clients could work with a pull based model where the contract provides an incentive and a location to pull from and the storage provider initiates everyting.  Deals wity contract cliehts are similar to current deal making protocols.  However there are key differences. In particular deal proposals can't be cryptographically signed by a contract. So none of the exact software needed for SPs to complete contract client deals is written yet.  The lotus team is actively prototyping modifications to data transfer and deal making software to allow for miner initiated deals with client contracts.
+Contract clients can work with an offchain party synchronizing with the chain and pushing deal data to miners. Alternatively contract clients could work with a pull based model where the contract provides an incentive and a location to pull from and the storage provider initiates everyting.  Deals with contract clients are similar to current deal making protocols.  However there are key differences. In particular deal proposals can't be cryptographically signed by a contract. So none of the exact software needed for SPs to complete contract client deals is written yet.  The lotus team is actively prototyping modifications to data transfer and deal making software to allow for miner initiated deals with client contracts.
 
 ## Some Extension Ideas
 
