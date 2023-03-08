@@ -1,2 +1,2 @@
-web3
+git+https://github.com/ethereum/web3.py.git
 instantcli
