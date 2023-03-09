@@ -80,7 +80,7 @@ contract DealClient {
     address public constant MARKET_ACTOR_ETH_ADDRESS =
         address(0xff00000000000000000000000000000000000005);
     address public constant DATACAP_ACTOR_ETH_ADDRESS =
-        address(0xFF00000000000000000000000000000000000007);
+        address(0xfF00000000000000000000000000000000000007);
 
 
     enum Status {
@@ -216,6 +216,12 @@ contract DealClient {
         return serializeExtraParamsV1(deal.extra_params);
     }
 
+
+    // authenticateMessage is the callback from the market actor into the contract
+    // as part of PublishStorageDeals. This message holds the deal proposal from the
+    // miner, which needs to be validated by the contract in accordance with the
+    // deal requests made and the contract's own policies
+    // @params - cbor byte array of AccountTypes.AuthenticateMessageParams
     function authenticateMessage(bytes memory params) internal view {
         require(
             msg.sender == MARKET_ACTOR_ETH_ADDRESS,
@@ -239,6 +245,11 @@ contract DealClient {
 
     }
 
+    // dealNotify is the callback from the market actor into the contract at the end
+    // of PublishStorageDeals. This message holds the previously approved deal proposal
+    // and the associated dealID. The dealID is stored as part of the contract state
+    // and the completion of this call marks the success of PublishStorageDeals
+    // @params - cbor byte array of MarketDealNotifyParams
     function dealNotify(bytes memory params) internal {
         require(
             msg.sender == MARKET_ACTOR_ETH_ADDRESS,
@@ -252,6 +263,10 @@ contract DealClient {
             mdnp.dealProposal
         );
 
+        // These checks prevent race conditions between the authenticateMessage and
+        // marketDealNotify calls where someone could have 2 of the same deal proposals
+        // within the same PSD msg, which would then get validated by authenticateMessage
+        // However, only one of those deals should be allowed
         require(
             pieceRequests[proposal.piece_cid.data].valid,
             "piece cid must be added before authorizing"
@@ -345,6 +360,11 @@ contract DealClient {
         // Add get datacap balance api and store datacap amount
     }
 
+
+    // handle_filecoin_method is the universal entry point for any evm based
+    // actor for a call coming from a builtin filecoin actor
+    // @method - FRC42 method number for the specific method hook
+    // @params - CBOR encoded byte array params
     function handle_filecoin_method(
         uint64 method,
         uint64,
