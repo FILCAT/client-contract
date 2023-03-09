@@ -60,7 +60,7 @@ contract DealClientTest is Test {
         client.makeDealProposal(createDealRequest());
         require(client.dealsLength() == 1, "Expect one deal");
 
-        ProposalIdSet memory proposalIdSet = client.getProposalIdSet(testCID);
+        RequestId memory proposalIdSet = client.getProposalIdSet(testCID);
         require(proposalIdSet.valid, "expected to have valid Proposal");
         DealRequest memory deal = client.getDealByIndex(0);
         require(deal.piece_size == 2048, "unexpected cid size in client after setting");
@@ -69,7 +69,7 @@ contract DealClientTest is Test {
         require(!providerSet.valid, "should not be valid before a cid is authorized");
 
         // non-added cid has expected state
-        ProposalIdSet memory proposalIdSetShort = client.getProposalIdSet(testShortCID);
+        RequestId memory proposalIdSetShort = client.getProposalIdSet(testShortCID);
         require(!proposalIdSetShort.valid, "expected to have valid Proposal");
         ProviderSet memory providerSetShort = client.getProviderSet(testShortCID);
         require(!providerSetShort.valid, "should not be valid before a cid is authorized");

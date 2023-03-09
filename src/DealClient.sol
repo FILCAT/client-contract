@@ -17,12 +17,12 @@ import {MarketDealNotifyParams, deserializeMarketDealNotifyParams, serializeDeal
 
 using CBOR for CBOR.CBORBuffer;
 
-struct ProposalIdSet {
-    bytes32 proposalId;
+struct RequestId {
+    bytes32 requestId;
     bool valid;
 }
 
-struct ProposalIdx {
+struct RequestIdx {
     uint256 idx;
     bool valid;
 }
@@ -82,11 +82,22 @@ contract DealClient {
     address public constant VERIFREG_ACTOR_ETH_ADDRESS =
         address(0xFF00000000000000000000000000000000000006);
 
-    mapping(bytes32 => ProposalIdx) public dealProposals; // contract deal id -> deal index
-    mapping(bytes => ProposalIdSet) public pieceToProposal; // commP -> dealProposalID
+
+    enum Status {
+        None,
+        RequestSubmitted,
+        DealPublished,
+        DealActivated,
+        DealTerminated
+    }
+
+    mapping(bytes32 => RequestIdx) public dealRequestIdx; // contract deal id -> deal index
+    DealRequest[] public dealRequests;
+
+    mapping(bytes => RequestId) public pieceRequests; // commP -> dealProposalID
     mapping(bytes => ProviderSet) public pieceProviders; // commP -> provider
     mapping(bytes => uint64) public pieceDeals; // commP -> deal ID
-    DealRequest[] public deals;
+    mapping(bytes => Status) public pieceStatus;
 
     event ReceivedDataCap(string received);
     event DealProposalCreate(
@@ -110,36 +121,41 @@ contract DealClient {
 
     function getProposalIdSet(
         bytes calldata cid
-    ) public view returns (ProposalIdSet memory) {
-        return pieceToProposal[cid];
+    ) public view returns (RequestId memory) {
+        return pieceRequests[cid];
     }
 
     function dealsLength() public view returns (uint256) {
-        return deals.length;
+        return dealRequests.length;
     }
 
     function getDealByIndex(
         uint256 index
     ) public view returns (DealRequest memory) {
-        return deals[index];
+        return dealRequests[index];
     }
 
     function makeDealProposal(
         DealRequest calldata deal
     ) public returns (bytes32) {
-        // TODO: length check on byte fields
         require(msg.sender == owner);
 
-        uint256 index = deals.length;
-        deals.push(deal);
+        if (pieceStatus[deal.piece_cid] == Status.DealPublished ||
+            pieceStatus[deal.piece_cid] == Status.DealActivated) {
+            revert("deal with this pieceCid already published");
+        }
+
+        uint256 index = dealRequests.length;
+        dealRequests.push(deal);
 
         // creates a unique ID for the deal proposal -- there are many ways to do this
         bytes32 id = keccak256(
             abi.encodePacked(block.timestamp, msg.sender, index)
         );
-        dealProposals[id] = ProposalIdx(index, true);
+        dealRequestIdx[id] = RequestIdx(index, true);
 
-        pieceToProposal[deal.piece_cid] = ProposalIdSet(id, true);
+        pieceRequests[deal.piece_cid] = RequestId(id, true);
+        pieceStatus[deal.piece_cid] = Status.RequestSubmitted;
 
         // writes the proposal metadata to the event log
         emit DealProposalCreate(
@@ -154,12 +170,11 @@ contract DealClient {
 
     // helper function to get deal request based from id
     function getDealRequest(
-        bytes32 proposalId
+        bytes32 requestId
     ) internal view returns (DealRequest memory) {
-        ProposalIdx memory pi = dealProposals[proposalId];
-        require(pi.valid, "proposalId not available");
-
-        return deals[pi.idx];
+        RequestIdx memory ri = dealRequestIdx[requestId];
+        require(ri.valid, "proposalId not available");
+        return dealRequests[ri.idx];
     }
 
     // Returns a CBOR-encoded DealProposal.
@@ -214,13 +229,13 @@ contract DealClient {
         );
 
         bytes memory pieceCid = proposal.piece_cid.data;
-        require(pieceToProposal[pieceCid].valid, "piece cid must be added before authorizing");
+        require(pieceRequests[pieceCid].valid, "piece cid must be added before authorizing");
         require(!pieceProviders[pieceCid].valid, "deal failed policy check: provider already claimed this cid");
 
-        DealRequest memory req = getDealRequest(pieceToProposal[pieceCid].proposalId);
+        DealRequest memory req = getDealRequest(pieceRequests[pieceCid].requestId);
         require(proposal.verified_deal == req.verified_deal, "verified_deal param mismatch");
         require(bigIntToUint(proposal.storage_price_per_epoch) <= req.storage_price_per_epoch, "storage price greater than request amount");
-        require(bigIntToUint(proposal.client_collateral) < req.client_collateral, "client collateral greater than request amount");
+        require(bigIntToUint(proposal.client_collateral) <= req.client_collateral, "client collateral greater than request amount");
 
     }
 
@@ -238,7 +253,7 @@ contract DealClient {
         );
 
         require(
-            pieceToProposal[proposal.piece_cid.data].valid,
+            pieceRequests[proposal.piece_cid.data].valid,
             "piece cid must be added before authorizing"
         );
         require(
@@ -251,6 +266,23 @@ contract DealClient {
             true
         );
         pieceDeals[proposal.piece_cid.data] = mdnp.dealId;
+        pieceStatus[proposal.piece_cid.data] = Status.DealPublished;
+    }
+
+
+    // This function can be called/smartly polled to retrieve the deal activation status
+    // associated with provided pieceCid and update the contract state based on that
+    // info
+    // @pieceCid - byte representation of pieceCid
+    function updateActivationStatus(bytes memory pieceCid) public {
+        require(pieceDeals[pieceCid] > 0, "no deal published for this piece cid");
+
+        MarketTypes.GetDealActivationReturn memory ret = MarketAPI.getDealActivation(pieceDeals[pieceCid]);
+        if (ret.terminated > 0) {
+            pieceStatus[pieceCid] = Status.DealTerminated;
+        } else if (ret.activated > 0) {
+            pieceStatus[pieceCid] = Status.DealActivated;
+        }
     }
 
     // addBalance funds the builtin storage market actor's escrow
