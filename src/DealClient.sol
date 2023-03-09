@@ -79,8 +79,8 @@ contract DealClient {
     uint64 public constant MARKET_NOTIFY_DEAL_METHOD_NUM = 4186741094;
     address public constant MARKET_ACTOR_ETH_ADDRESS =
         address(0xff00000000000000000000000000000000000005);
-    address public constant VERIFREG_ACTOR_ETH_ADDRESS =
-        address(0xFF00000000000000000000000000000000000006);
+    address public constant DATACAP_ACTOR_ETH_ADDRESS =
+        address(0xFF00000000000000000000000000000000000007);
 
 
     enum Status {
@@ -338,8 +338,8 @@ contract DealClient {
 
     function receiveDataCap(bytes memory params) internal {
         require(
-            msg.sender == VERIFREG_ACTOR_ETH_ADDRESS,
-            "msg.sender needs to be verifreg actor f06"
+            msg.sender == DATACAP_ACTOR_ETH_ADDRESS,
+            "msg.sender needs to be datacap actor f07"
         );
         emit ReceivedDataCap("DataCap Received!");
         // Add get datacap balance api and store datacap amount
