@@ -1,6 +1,6 @@
 > Note: The contract in this repo is WIP and pending audit, use with caution :warning:
 
-# :warning: This repo is now deprecated. The latest base client contract is located in our [new unified repo](https://github.com/filecoin-project/fvm-starter-kit-deal-making/tree/main/client-contract). 
+# :warning: This repo is now deprecated. The latest base client contract is located in our [new unified repo](https://github.com/filecoin-project/fvm-starter-kit-deal-making/). 
 
 ## The README remains relevant reading and this repo will be preserved. 
 
